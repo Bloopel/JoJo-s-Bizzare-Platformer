@@ -7,8 +7,9 @@
 .floater {background: yellow; }
 
 .actor  { position: absolute;  }
-.player { background-image: url("img/Jojo.png"); 
-		  background-size: 40px 40px; }
+.player { background-image: url("img/Jojo.png");  }
+.coin 	{background-image: url("img/Aja.png");
+			background-size: 25px 25px;}
 
 
 .game {
