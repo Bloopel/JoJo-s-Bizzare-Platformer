@@ -23,6 +23,9 @@ function Level(plan) {
       if (ch == "x")
         fieldType = "wall";
       // Because there is a third case (space ' '), use an "else if" instead of "else"
+	  else if ( ch == "y")
+		  fieldType = "floater";
+	  
       else if (ch == "!")
         fieldType = "lava";
 
