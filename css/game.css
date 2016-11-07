@@ -8,7 +8,7 @@
 
 .actor  { position: absolute;  }
 .player { background-image: url("img/Jojo.png"); 
-		  background-size: 40px 40px; }
+		  background-size: 35px 60px; }
 .coin 	{background-image: url("img/Aja.png");
 			background-size: 25px 25px;}
 
