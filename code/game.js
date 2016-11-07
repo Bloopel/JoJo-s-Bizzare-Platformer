@@ -1,6 +1,7 @@
 var actorChars = {
 	'@' : Player,
 	'o' : Coin
+	//'!' : Lava
 };
 function Level(plan) {
   // Use the length of a single row to set the width of the level
