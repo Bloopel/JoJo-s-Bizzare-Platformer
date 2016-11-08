@@ -546,7 +546,7 @@ function runGame(plans, Display) {
 	  gravity = 30;
 		  }
 		else{
-			console.log("Game over");
+			document.getElementById("state").innerHTML = "Game over";
 			startLevel(0,3);
 		}
 	  }
@@ -556,8 +556,8 @@ function runGame(plans, Display) {
 	  gravity = 30;
 	  }
       else{
-        console.log("You win!");
-		console.log(score);
+        document.getElementById("score").innerHTML = "Score: " + score;
+		document.getElementById("state").innerHTML = "You Win!!!";
 	  }
     });
   }

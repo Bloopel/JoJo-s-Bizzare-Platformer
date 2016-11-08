@@ -1,13 +1,15 @@
-.background    { background-color: gray;
+.background    { background-image:  url("img/Wall2.png");
                  table-layout: fixed;
                  border-spacing: 0;   }
 .background td { padding: 0;          }
 .lava          { background-image: url("img/bubble.png"); }
 .wall          { background-image: url("img/Wall.png");}
-.water			{background-image: url("img/Water.png");}
+.water			{background-image: url("img/Water.png");
+				opacity: 0.2}
 .floater {background-image: url("img/Aja.png");
 			background-size: 25px 25px}
-.boost {background: green;}
+.boost {background-image: url("img/Boost.png");
+	background-size: 25px 25px;}
 
 .actor  { position: absolute;  }
 .player { background-image: url("img/Jojo.png");  }
