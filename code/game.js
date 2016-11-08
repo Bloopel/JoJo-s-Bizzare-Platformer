@@ -559,6 +559,7 @@ function runGame(plans, Display) {
       else{
         document.getElementById("score").innerHTML = "Score: " + score;
 		document.getElementById("state").innerHTML = "You Win!!!";
+		score = 0;
 	  }
     });
   }
