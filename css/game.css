@@ -5,6 +5,7 @@
 .lava          { background: rgb(255, 100, 100); }
 .wall          { background-image: url("img/Wall.png");}
 .floater {background: yellow; }
+.boost {background: green;}
 
 .actor  { position: absolute;  }
 .player { background-image: url("img/Jojo.png");  }

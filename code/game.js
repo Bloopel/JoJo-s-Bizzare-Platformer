@@ -1,7 +1,9 @@
 var actorChars = {
 	'@' : Player,
 	'o' : Coin,
-	"!": Lava , "|": Lava, "v": Lava  
+	"!": Lava , "|": Lava, "v": Lava,
+	"y": Floater,
+	"s" : Boost
 };
 
 function Level(plan) {
@@ -34,11 +36,11 @@ function Level(plan) {
        else if (ch == "x")
         fieldType = "wall";
       // Because there is a third case (space ' '), use an "else if" instead of "else"
-	  else if ( ch == "y")
-		  fieldType = "floater";
+	 // else if ( ch == "y")
+		  //fieldType = "floater";
 	  
-     // else if (ch == "!")
-       // fieldType = "lava";
+      else if (ch == "z")
+        fieldType = "tele";
 
       // "Push" the fieldType, which is a string, onto the gridLine array (at the end).
       gridLine.push(fieldType);
@@ -50,7 +52,7 @@ function Level(plan) {
 	  return actor.type == 'player';
   })[0];
 }
-
+var score = 0;
 Level.prototype.isFinished = function() {
   return this.status != null && this.finishDelay < 0;
 };
@@ -61,6 +63,13 @@ function Coin(pos) {
   this.wobble = Math.random() * Math.PI * 2;
 }
 Coin.prototype.type = 'coin';
+
+function Floater(pos) {
+  this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
+  this.size = new Vector(0.6, 0.6);
+  this.wobble = Math.random() * Math.PI * 2;
+}
+Floater.prototype.type = 'floater';
 
 
 
@@ -104,6 +113,14 @@ function Lava(pos, ch) {
 }
 Lava.prototype.type = "lava";
 
+function Boost(pos,ch){
+  this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
+  this.size = new Vector(0.6, 0.6);
+  this.wobble = Math.random() * Math.PI * 2;
+}
+	
+
+Boost.prototype.type = "boost";
 // Helper function to easily create an element of a type provided 
 // and assign it a class.
 function elt(name, className) {
@@ -220,7 +237,8 @@ Level.prototype.obstacleAt = function(pos, size) {
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       var fieldType = this.grid[y][x];
-      if (fieldType) return fieldType;
+      if (fieldType) 
+		  return fieldType;
     }
   }
 };
@@ -292,6 +310,17 @@ Coin.prototype.act = function(step) {
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
 
+Floater.prototype.act = function(step) {
+  this.wobble += step * wobbleSpeed;
+  var wobblePos = Math.cos(this.wobble) * wobbleDist;
+  this.pos = this.basePos.plus(new Vector(0, wobblePos));
+};
+
+Boost.prototype.act = function(step) {
+  this.wobble += step * wobbleSpeed;
+  var wobblePos = Math.cos(this.wobble) * wobbleDist;
+  this.pos = this.basePos.plus(new Vector(0, wobblePos));
+};
 var maxStep = 0.05;
 
 var playerXSpeed = 7;
@@ -359,7 +388,8 @@ Level.prototype.playerTouched = function(type, actor) {
   if (type == "lava" && this.status == null) {
     this.status = "lost";
     this.finishDelay = 1;
-  } else if (type == "coin") {
+  } 
+  else if (type == "coin") {
     this.actors = this.actors.filter(function(other) {
       return other != actor;
     });
@@ -369,8 +399,27 @@ Level.prototype.playerTouched = function(type, actor) {
          })) {
       this.status = "won";
       this.finishDelay = 1;
-    }
+		 }
   }
+  
+  else if (type == "floater") {
+	  score += 1;
+    this.actors = this.actors.filter(function(other) {
+		
+      return other != actor;
+	  
+  });}
+ else if (type == "boost") {
+	  playerXSpeed = 11;
+	  gravity = 20;
+    this.actors = this.actors.filter(function(other) {
+		
+      return other != actor;
+	  
+    });
+    
+    }
+  
 };
 
 // Arrow key codes for readibility
@@ -441,17 +490,31 @@ function runLevel(level, Display, andThen) {
 }
 
 function runGame(plans, Display) {
-  function startLevel(n) {
+  function startLevel(n, lives) {
     // Create a new level using the nth element of array plans
     // Pass in a reference to Display function, DOMDisplay (in index.html).
     runLevel(new Level(plans[n]), Display, function(status) {
-      if (status == "lost")
-        startLevel(n);
-      else if (n < plans.length - 1)
-        startLevel(n + 1);
-      else
+      if (status == "lost"){
+		  if (lives > 0){
+        startLevel(n, lives - 1);
+		playerXSpeed = 7;
+	  gravity = 30;
+		  }
+		else{
+			console.log("Game over");
+			startLevel(0,3);
+		}
+	  }
+      else if (n < plans.length - 1){
+        startLevel(n + 1, lives);
+		playerXSpeed = 7;
+	  gravity = 30;
+	  }
+      else{
         console.log("You win!");
+		console.log(score);
+	  }
     });
   }
-  startLevel(0);
+  startLevel(0, 3);
 }
