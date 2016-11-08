@@ -54,11 +54,15 @@ var GAME_LEVELS = [
    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
   ["xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-   "x                                                           |   |   |                                        x",
+   "x           |                                               |                                                x",
+   "x                                                                                                            x"'
+   "x         |   |                                               |                                              x",
    "x                                                                                                            x",
-   "x @                                                                                                          x",
-   "x    y y y y y y y y          y  y  y                      r y y y y y y     y  y  y                     o   x",
-   "x     |   |   |   |xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx           xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx",
+   "x @     |       |                                               |                                            x",
+   "x                                                                                                            x",
+   "x    y|y y y y y y|y          y  y  y                      r y y y|y y|y     y  y  y                     o   x",
+   "x                                                                                                            x",
+   "x   |              xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx        |  xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx",
    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"]
   
 ];

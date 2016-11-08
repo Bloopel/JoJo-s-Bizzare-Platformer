@@ -447,7 +447,7 @@ Level.prototype.playerTouched = function(type, actor) {
   }
   
   else if (type == "floater") {
-	  score += 1;
+	  score += 100;
     this.actors = this.actors.filter(function(other) {
 		
       return other != actor;
@@ -546,6 +546,7 @@ function runGame(plans, Display) {
 	  gravity = 30;
 		  }
 		else{
+			document.getElementById("score").innerHTML = "Score: " + score;
 			document.getElementById("state").innerHTML = "Game over";
 			startLevel(0,3);
 		}
