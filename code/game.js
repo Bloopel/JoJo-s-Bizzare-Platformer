@@ -1,7 +1,7 @@
 var actorChars = {
 	'@' : Player,
 	'o' : Coin,
-	//"!": Lava, "|": Lava, "v": Lava  
+	"!": Lava , "|": Lava, "v": Lava  
 };
 
 function Level(plan) {
@@ -37,8 +37,8 @@ function Level(plan) {
 	  else if ( ch == "y")
 		  fieldType = "floater";
 	  
-      else if (ch == "!")
-        fieldType = "lava";
+     // else if (ch == "!")
+       // fieldType = "lava";
 
       // "Push" the fieldType, which is a string, onto the gridLine array (at the end).
       gridLine.push(fieldType);
@@ -50,6 +50,11 @@ function Level(plan) {
 	  return actor.type == 'player';
   })[0];
 }
+
+Level.prototype.isFinished = function() {
+  return this.status != null && this.finishDelay < 0;
+};
+
 function Coin(pos) {
   this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
   this.size = new Vector(0.6, 0.6);
@@ -82,10 +87,10 @@ function Player(pos) {
 }
 Player.prototype.type = "player";
 
-/*function Lava(pos, ch) {
+function Lava(pos, ch) {
   this.pos = pos;
   this.size = new Vector(1, 1);
-  if (ch == "=") {
+  if (ch == "!") {
     // Horizontal lava
     this.speed = new Vector(2, 0);
   } else if (ch == "|") {
@@ -98,7 +103,7 @@ Player.prototype.type = "player";
   }
 }
 Lava.prototype.type = "lava";
-*/
+
 // Helper function to easily create an element of a type provided 
 // and assign it a class.
 function elt(name, className) {
@@ -165,6 +170,8 @@ DOMDisplay.prototype.drawFrame = function() {
   if (this.actorLayer)
     this.wrap.removeChild(this.actorLayer);
   this.actorLayer = this.wrap.appendChild(this.drawActors());
+  // Update the status each time with this.level.status"
+  this.wrap.className = "game " + (this.level.status || "");
   this.scrollPlayerIntoView();
 };
 
@@ -193,6 +200,11 @@ DOMDisplay.prototype.scrollPlayerIntoView = function() {
   else if (center.y > bottom - margin)
     this.wrap.scrollTop = center.y + margin - height;
 };
+
+DOMDisplay.prototype.clear = function() {
+  this.wrap.parentNode.removeChild(this.wrap);
+};
+
 Level.prototype.obstacleAt = function(pos, size) {
   
   var xStart = Math.floor(pos.x);
@@ -200,8 +212,10 @@ Level.prototype.obstacleAt = function(pos, size) {
   var yStart = Math.floor(pos.y);
   var yEnd = Math.ceil(pos.y + size.y);
 
-  if (xStart < 0 || xEnd > this.width || yStart < 0 || yEnd > this.height)
+  if (xStart < 0 || xEnd > this.width || yStart < 0)
     return "wall";
+  if (yEnd > this.height)
+    return "lava";
 
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
@@ -227,6 +241,7 @@ Level.prototype.actorAt = function(actor) {
 };
 
 
+
 Level.prototype.actorAt = function(actor){
 	for (var i = 0; i < this.actors.length; i++){
 		var other = this.actors[i];
@@ -239,10 +254,14 @@ Level.prototype.actorAt = function(actor){
 	}
 	
 };
+
+
 // Update simulation each step based on keys & step size
 Level.prototype.animate = function(step, keys) {
+  // Have game continue past point of win or loss
+  if (this.status != null)
+    this.finishDelay -= step;
 
-  
   while (step > 0) {
     var thisStep = Math.min(step, maxStep);
     this.actors.forEach(function(actor) {
@@ -253,7 +272,8 @@ Level.prototype.animate = function(step, keys) {
     step -= thisStep;
   }
 };
-/*Lava.prototype.act = function(step, level) {
+
+Lava.prototype.act = function(step, level) {
   var newPos = this.pos.plus(this.speed.times(step));
   if (!level.obstacleAt(newPos, this.size))
     this.pos = newPos;
@@ -261,7 +281,7 @@ Level.prototype.animate = function(step, keys) {
     this.pos = this.repeatPos;
   else
     this.speed = this.speed.times(-1);
-};*/
+};
 
 var wobbleSpeed = 8;
 var wobbleDist = 0.07;
@@ -284,7 +304,9 @@ Player.prototype.moveX = function(step, level, keys) {
   var motion = new Vector(this.speed.x * step, 0);
   var newPos = this.pos.plus(motion);
   var obstacle = level.obstacleAt(newPos, this.size);
-  if(obstacle != "wall")
+  if(obstacle)
+	  level.playerTouched(obstacle);
+  else
 	  this.pos = newPos;
 };
 
@@ -300,6 +322,7 @@ Player.prototype.moveY = function(step, level, keys) {
   var jumpcount = 0;
   var maxjumpcount = 2;
   if(obstacle){
+	  level.playerTouched(obstacle);
 	 if (keys.up && this.speed.y > 0)
 		this.speed.y = -jumpSpeed;
 	else
@@ -320,14 +343,33 @@ Player.prototype.act = function(step, level, keys) {
   var otherActor = level.actorAt(this);
   if(otherActor)
 	  level.playerTouched(otherActor.type, otherActor);
+
+
+ // Losing animation
+  if (level.status == "lost") {
+    this.pos.y += step;
+    this.size.y -= step;
+  }
 };
 
 Level.prototype.playerTouched = function(type, actor) {
 
-  if (type == "coin") {
+  // if the player touches lava and the player hasn't won
+  // Player loses
+  if (type == "lava" && this.status == null) {
+    this.status = "lost";
+    this.finishDelay = 1;
+  } else if (type == "coin") {
     this.actors = this.actors.filter(function(other) {
       return other != actor;
     });
+    // If there aren't any coins left, player wins
+    if (!this.actors.some(function(actor) {
+           return actor.type == "coin";
+         })) {
+      this.status = "won";
+      this.finishDelay = 1;
+    }
   }
 };
 
@@ -382,13 +424,19 @@ function runAnimation(frameFunc) {
 var arrows = trackKeys(arrowCodes);
 
 // Organize a single level and begin animation
-function runLevel(level, Display) {
+function runLevel(level, Display, andThen) {
   var display = new Display(document.body, level);
 
-  runAnimation(function(step) {
+ runAnimation(function(step) {
     // Allow the viewer to scroll the level
     level.animate(step, arrows);
     display.drawFrame(step);
+    if (level.isFinished()) {
+      display.clear();
+      if (andThen)
+        andThen(level.status);
+      return false;
+    }
   });
 }
 
@@ -396,7 +444,14 @@ function runGame(plans, Display) {
   function startLevel(n) {
     // Create a new level using the nth element of array plans
     // Pass in a reference to Display function, DOMDisplay (in index.html).
-    runLevel(new Level(plans[n]), Display);
+    runLevel(new Level(plans[n]), Display, function(status) {
+      if (status == "lost")
+        startLevel(n);
+      else if (n < plans.length - 1)
+        startLevel(n + 1);
+      else
+        console.log("You win!");
+    });
   }
   startLevel(0);
 }
