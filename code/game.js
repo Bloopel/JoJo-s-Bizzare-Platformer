@@ -546,6 +546,7 @@ function runGame(plans, Display) {
 	  gravity = 30;
 		  }
 		else{
+			document.getElementById("score").innerHTML = "Score: " + score;
 			document.getElementById("state").innerHTML = "Game over";
 			startLevel(0,3);
 		}
