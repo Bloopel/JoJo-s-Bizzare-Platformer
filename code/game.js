@@ -1,8 +1,9 @@
 var actorChars = {
 	'@' : Player,
-	'o' : Coin
-	//'!' : Lava
+	'o' : Coin,
+	//"!": Lava, "|": Lava, "v": Lava  
 };
+
 function Level(plan) {
   // Use the length of a single row to set the width of the level
   this.width = plan[0].length;
@@ -81,6 +82,23 @@ function Player(pos) {
 }
 Player.prototype.type = "player";
 
+/*function Lava(pos, ch) {
+  this.pos = pos;
+  this.size = new Vector(1, 1);
+  if (ch == "=") {
+    // Horizontal lava
+    this.speed = new Vector(2, 0);
+  } else if (ch == "|") {
+    // Vertical lava
+    this.speed = new Vector(0, 2);
+  } else if (ch == "v") {
+    // Drip lava. Repeat back to this pos.
+    this.speed = new Vector(0, 3);
+    this.repeatPos = pos;
+  }
+}
+Lava.prototype.type = "lava";
+*/
 // Helper function to easily create an element of a type provided 
 // and assign it a class.
 function elt(name, className) {
@@ -235,6 +253,15 @@ Level.prototype.animate = function(step, keys) {
     step -= thisStep;
   }
 };
+/*Lava.prototype.act = function(step, level) {
+  var newPos = this.pos.plus(this.speed.times(step));
+  if (!level.obstacleAt(newPos, this.size))
+    this.pos = newPos;
+  else if (this.repeatPos)
+    this.pos = this.repeatPos;
+  else
+    this.speed = this.speed.times(-1);
+};*/
 
 var wobbleSpeed = 8;
 var wobbleDist = 0.07;

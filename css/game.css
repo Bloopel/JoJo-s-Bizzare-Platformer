@@ -1,4 +1,4 @@
-.background    { background-image: url("img/Background.png");
+.background    { background-color: gray;
                  table-layout: fixed;
                  border-spacing: 0;   }
 .background td { padding: 0;          }
