@@ -3,7 +3,9 @@ var actorChars = {
 	'o' : Coin,
 	"!": Lava , "|": Lava, "v": Lava,
 	"y": Floater,
-	"s" : Boost
+	"s" : Boost,
+	"w" : Water,
+	"r" : Put
 };
 
 function Level(plan) {
@@ -71,7 +73,13 @@ function Floater(pos) {
 }
 Floater.prototype.type = 'floater';
 
+function Put(pos) {
+  this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
+  this.size = new Vector(0.6, 0.6);
+  this.wobble = Math.random() * Math.PI * 2;
+}
 
+Put.prototype.type = 'put';
 
 function Vector(x, y) {
   this.x = x; this.y = y;
@@ -101,7 +109,7 @@ function Lava(pos, ch) {
   this.size = new Vector(1, 1);
   if (ch == "!") {
     // Horizontal lava
-    this.speed = new Vector(2, 0);
+    this.speed = new Vector(5, 0);
   } else if (ch == "|") {
     // Vertical lava
     this.speed = new Vector(0, 2);
@@ -112,6 +120,17 @@ function Lava(pos, ch) {
   }
 }
 Lava.prototype.type = "lava";
+
+function Water(pos, ch) {
+  this.pos = pos;
+  this.size = new Vector(1,1);
+ if (ch == "w") {
+    // Horizontal lava
+    this.speed = new Vector(0, 0);
+  }
+}
+
+Water.prototype.type = "water";
 
 function Boost(pos,ch){
   this.basePos = this.pos = pos.plus(new Vector(0.2, 0.1));
@@ -237,7 +256,7 @@ Level.prototype.obstacleAt = function(pos, size) {
   for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       var fieldType = this.grid[y][x];
-      if (fieldType) 
+	  if (fieldType) 
 		  return fieldType;
     }
   }
@@ -301,6 +320,16 @@ Lava.prototype.act = function(step, level) {
     this.speed = this.speed.times(-1);
 };
 
+Water.prototype.act = function(step, level) {
+  var newPos = this.pos.plus(this.speed.times(step));
+  if (!level.obstacleAt(newPos, this.size))
+    this.pos = newPos;
+  else if (this.repeatPos)
+    this.pos = this.repeatPos;
+  else
+    this.speed = this.speed.times(-1);
+};
+
 var wobbleSpeed = 8;
 var wobbleDist = 0.07;
 
@@ -313,6 +342,11 @@ Coin.prototype.act = function(step) {
 Floater.prototype.act = function(step) {
   this.wobble += step * wobbleSpeed;
   var wobblePos = Math.cos(this.wobble) * wobbleDist;
+  this.pos = this.basePos.plus(new Vector(0, wobblePos));
+};
+Put.prototype.act = function(step) {
+  this.wobble += step * wobbleSpeed;
+  var wobblePos = Math.sin(this.wobble) * wobbleDist;
   this.pos = this.basePos.plus(new Vector(0, wobblePos));
 };
 
@@ -389,6 +423,16 @@ Level.prototype.playerTouched = function(type, actor) {
     this.status = "lost";
     this.finishDelay = 1;
   } 
+  else if (type == "water"){
+	  playerXSpeed = 3;
+	  gravity = 45;
+	 }
+  
+  else if (type == "put"){
+	  playerXSpeed = 7;
+	  gravity = 30;
+  }
+  
   else if (type == "coin") {
     this.actors = this.actors.filter(function(other) {
       return other != actor;
@@ -418,7 +462,8 @@ Level.prototype.playerTouched = function(type, actor) {
 	  
     });
     
-    }
+    
+  }
   
 };
 

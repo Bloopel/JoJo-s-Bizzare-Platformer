@@ -4,6 +4,7 @@
 .background td { padding: 0;          }
 .lava          { background: rgb(255, 100, 100); }
 .wall          { background-image: url("img/Wall.png");}
+.water			{background: blue;}
 .floater {background: yellow; }
 .boost {background: green;}
 
