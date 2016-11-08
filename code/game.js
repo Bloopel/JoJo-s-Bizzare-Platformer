@@ -447,7 +447,7 @@ Level.prototype.playerTouched = function(type, actor) {
   }
   
   else if (type == "floater") {
-	  score += 1;
+	  score += 100;
     this.actors = this.actors.filter(function(other) {
 		
       return other != actor;
